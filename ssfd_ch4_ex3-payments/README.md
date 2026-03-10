@@ -7,9 +7,9 @@ A minimal Spring Boot service exposing a single endpoint to accept a refunds JSO
 Prerequisites: Java 24 (as per pom.xml), Maven wrapper included.
 
 - Windows PowerShell:
-  - .\mvnw.cmd spring-boot:run
+  - `.\mvnw.cmd spring-boot:run`
 - Linux/macOS (if applicable):
-  - ./mvnw spring-boot:run
+  - `./mvnw spring-boot:run`
 
 By default, the app starts on http://localhost:8080.
 
@@ -48,13 +48,30 @@ Fields:
 
 For this exercise, you must generate the SHA3-256 hash using the companion application ssfd_ch4_ex3-warehouse.
 
-- Open and run the ssfd_ch4_ex3-warehouse project (see that project's README for exact run instructions).
+- Open and run the ssfd_ch4_ex3-warehouse project: `mvn exec:java -Dexec.mainClass="org.example.Main"`
 - Use its provided functionality to compute the SHA3-256 of the exact refunds JSON you will send to this service.
 - Copy the resulting lowercase hex digest and set it in the X-Content-SHA3 request header when calling this service.
 
 Important:
 - Ensure the file content used for hashing is exactly the content you send in the request (no extra whitespace, newlines, or reformatting between hashing and sending).
 - If you generate the body dynamically, compute the hash from the same in-memory bytes before sending.
+
+## Run with Simple Output
+
+From `ssfd_ch4_ex3-warehouse` (Linux/macOS):
+
+```
+PORT="<port-from-spring-console>"
+HASH="<paste-hex-from-ssfd_ch4_ex3-warehouse>"
+
+curl -s -o /dev/null -w "%{http_code}\n" \
+  -X POST "http://localhost:$PORT/api/refunds" \
+  -H "Content-Type: application/json" \
+  -H "X-Content-SHA3: $HASH" \
+  --data-binary @./src/main/resources/refunds.json
+```
+
+Response: `200`
 
 ## Example calls
 
@@ -63,7 +80,9 @@ Assume refunds.json contains the example array above.
 1) curl (Windows PowerShell with curl alias or curl.exe):
 
 $body = Get-Content -Raw -Path .\refunds.json
-# Paste the hash you obtained from ssfd_ch4_ex3-warehouse
+
+&#x261E;&nbsp;Paste the hash you obtained from ssfd_ch4_ex3-warehouse
+
 $hash = "<paste-hex-from-ssfd_ch4_ex3-warehouse>"
 
 curl.exe -X POST "http://localhost:8080/api/refunds" ^
@@ -74,7 +93,9 @@ curl.exe -X POST "http://localhost:8080/api/refunds" ^
 2) PowerShell Invoke-RestMethod:
 
 $body = Get-Content -Raw -Path .\refunds.json
-# Paste the hash you obtained from ssfd_ch4_ex3-warehouse
+
+&#x261E;&nbsp; Paste the hash you obtained from ssfd_ch4_ex3-warehouse
+
 $hash = "<paste-hex-from-ssfd_ch4_ex3-warehouse>"
 
 Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/refunds" `
@@ -83,6 +104,14 @@ Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/refunds" `
   -Body $body
 
 3) curl (Linux/macOS):
+
+HASH="<paste-hex-from-ssfd_ch4_ex3-warehouse>"
+curl -X POST "http://localhost:8080/api/refunds" \
+  -H "Content-Type: application/json" \
+  -H "X-Content-SHA3: $HASH" \
+  --data-binary @refunds.json
+
+4) curl (Linux/macOS): 
 
 HASH="<paste-hex-from-ssfd_ch4_ex3-warehouse>"
 curl -X POST "http://localhost:8080/api/refunds" \
