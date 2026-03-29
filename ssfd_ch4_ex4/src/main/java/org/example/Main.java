@@ -11,7 +11,12 @@ public class Main {
             byte[] data = ResourceReader.readResourceFully("refunds.json");
 
             // 2) Use a plain secret key (hardcoded for example purposes only)
-            String secret = "demo-secret-change-me";
+            // String secret = "demo-secret-change-me";
+            if (args.length != 1) {
+              System.err.println("missing required argument [secret]");
+              System.exit(1);
+            }
+            String secret = args[0];
 
             // 3) Compute HMAC using HmacSHA256 (extracted to utility)
             byte[] hmac = HmacUtil.hmacSha256(secret.getBytes(StandardCharsets.UTF_8), data);
